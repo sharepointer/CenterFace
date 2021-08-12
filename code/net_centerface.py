@@ -58,7 +58,6 @@ def build(inputs, is_training=False, ssh_head=True, num_head_ch=24, upsample_bil
             p3 = tf.identity((p3_0 + p3_1), name='p3')
             print(p3)
 
-            p_reg = slim.conv2d(p3, num_head_ch, kernel_size=[3, 3], stride=1)
             if ssh_head:
                 p_out_1 = slim.conv2d(p3, num_head_ch // 2, kernel_size=[3, 3], stride=1)
 
@@ -69,37 +68,32 @@ def build(inputs, is_training=False, ssh_head=True, num_head_ch=24, upsample_bil
                 p_out_3 = slim.conv2d(p_out_top, num_head_ch // 4, kernel_size=[3, 3], stride=1)
                 p_out_3 = slim.conv2d(p_out_3, num_head_ch // 4, kernel_size=[3, 3], stride=1)
 
-                p_class = tf.concat([p_out_1, p_out_2, p_out_3], axis=3)
+                p_out = tf.concat([p_out_1, p_out_2, p_out_3], axis=3)
             else:
-                p_class = slim.conv2d(p3, num_head_ch, kernel_size=[3, 3], stride=1)
+                p_out = slim.conv2d(p3, num_head_ch, kernel_size=[3, 3], stride=1)
 
-            map_class = slim.conv2d(p_class, 1, kernel_size=1, stride=1,
+            map_class = slim.conv2d(p_out, 1, kernel_size=1, stride=1,
                                     normalizer_fn=None, activation_fn=tf.nn.sigmoid, biases_initializer=tf.zeros_initializer(),
                                     scope='pred_class')
             print(map_class)
 
-            map_scale = slim.conv2d(p_reg, 2, kernel_size=1, stride=1,
+            map_scale = slim.conv2d(p_out, 2, kernel_size=1, stride=1,
                                     normalizer_fn=None, activation_fn=None, biases_initializer=tf.zeros_initializer(),
                                     scope='pred_scale')
             print(map_scale)
 
-            map_offset = slim.conv2d(p_reg, 2, kernel_size=1, stride=1,
+            map_offset = slim.conv2d(p_out, 2, kernel_size=1, stride=1,
                                      normalizer_fn=None, activation_fn=None, biases_initializer=tf.zeros_initializer(),
                                      scope='pred_offset')
             print(map_offset)
 
-            map_landmark = slim.conv2d(p_reg, 10, kernel_size=1, stride=1,
+            map_landmark = slim.conv2d(p_out, 10, kernel_size=1, stride=1,
                                        normalizer_fn=None, activation_fn=None, biases_initializer=tf.zeros_initializer(),
                                        scope='pred_landmark')
             print(map_landmark)
 
-            map_semantic = slim.conv2d(p_reg, 2, kernel_size=1, stride=1,
-                                       normalizer_fn=None, activation_fn=None, biases_initializer=tf.zeros_initializer(),
-                                       scope='pred_semantic')
-            print(map_semantic)
-
             if is_training:
-                return map_class, map_scale, map_offset, map_landmark, map_semantic
+                return map_class, map_scale, map_offset, map_landmark
             else:
                 feat_max_pool = tf.nn.max_pool2d(map_class, ksize=3, strides=1, padding='SAME')
                 feat_no_face = tf.zeros_like(map_class)
