@@ -1,5 +1,6 @@
-# 人脸检测
-CenterFace的一个基于 TF1.15 实现
+# 概要
+- 人脸检测
+- tf1.15
 
 ## 参考项目
 - https://github.com/xingyizhou/CenterNet
