@@ -440,7 +440,7 @@ if __name__ == '__main__':
 
     with tf.Session(config=gpu_config) as sess:
         new_checkpoint = tf.train.latest_checkpoint('../checkpoints/checkpoints')
-        print('====== {}'.format(new_checkpoint))
+        print('{}'.format(new_checkpoint))
         saver.restore(sess, new_checkpoint)
 
         if 0 == work_mode:

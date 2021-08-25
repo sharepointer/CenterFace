@@ -13,7 +13,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 args = argparse.ArgumentParser()
 args.add_argument('--size', default=32, type=int)
 args.add_argument('--tflite', default=0, type=int)
-args.add_argument('--name', default='mobilenet_centerface', type=str)
+args.add_argument('--name', default='face_detect_centerface', type=str)
 ARGS = args.parse_args()
 
 input_size = ARGS.size
@@ -87,7 +87,7 @@ if export_lite:
         os.chdir('model_export')
         os.system('./mnn2bin {}'.format(tflite_model_name))
 else:
-    map_class, map_scale, map_offset, map_landmark, _ = net_factory.build(input_image, backbone=CONFIG.MODEL.BACKBONE_NAME)
+    map_class, map_scale, map_offset, map_landmark = net_factory.build(input_image, backbone=CONFIG.MODEL.BACKBONE_NAME)
     # print(map_class)
     # print(map_scale)
     # print(map_offset)
@@ -121,6 +121,6 @@ else:
                                                                   'pred_landmark_map'])
         open('../inference/{}.pb'.format(export_name), "wb").write(freeze_graph.SerializeToString())
 
-    os.chdir('../inference')
-    os.system('./MNNConvert -f TF --modelFile {}.pb --MNNModel {}.mnn --bizCode mnn'.format(export_name, export_name))
-    os.system('./mnn2bin {}.mnn'.format(export_name))
+    # os.chdir('../inference')
+    # os.system('./MNNConvert -f TF --modelFile {}.pb --MNNModel {}.mnn --bizCode mnn'.format(export_name, export_name))
+    # os.system('./mnn2bin {}.mnn'.format(export_name))

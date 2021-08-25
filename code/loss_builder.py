@@ -21,12 +21,15 @@ def loss_center(y_true, y_pred):
     return out_loss, debug_info
 
 
-def loss_scale(y_true, y_pred):
-    absolute_loss = tf.abs(y_true[:, :, :, :2] - y_pred[:, :, :, :])
-    square_loss = 0.5 * ((y_true[:, :, :, :2] - y_pred[:, :, :, :]) ** 2)
-    loss = y_true[:, :, :, 2] * tf.reduce_sum(tf.where(tf.less(absolute_loss, 1.0), square_loss, absolute_loss - 0.5), axis=-1)
+def loss_scale(y_true, y_pred, use_iou=False):
     assigned_boxes = tf.reduce_sum(y_true[:, :, :, 2])
-    out_loss = tf.reduce_sum(loss) / tf.maximum(1.0, assigned_boxes)
+    if use_iou:
+        pass
+    else:
+        absolute_loss = tf.abs(y_true[:, :, :, :2] - y_pred[:, :, :, :])
+        square_loss = 0.5 * ((y_true[:, :, :, :2] - y_pred[:, :, :, :]) ** 2)
+        loss = y_true[:, :, :, 2] * tf.reduce_sum(tf.where(tf.less(absolute_loss, 1.0), square_loss, absolute_loss - 0.5), axis=-1)
+        out_loss = tf.reduce_sum(loss) / tf.maximum(1.0, assigned_boxes)
 
     return out_loss
 

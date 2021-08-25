@@ -3,7 +3,7 @@ import shutil
 import argparse
 
 args = argparse.ArgumentParser()
-args.add_argument('--score', default=0.3, type=float)
+args.add_argument('--score', default=0.5, type=float)
 args.add_argument('--show', default=0, type=int)
 ARGS = args.parse_args()
 

@@ -1,0 +1,2 @@
+model_checkpoint_path: "face_detect_centerface.ckpt"
+all_model_checkpoint_paths: "face_detect_centerface.ckpt"
